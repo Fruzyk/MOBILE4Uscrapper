@@ -6,12 +6,10 @@ from bs4 import BeautifulSoup
 def write_json(new_data, filename='db.json'):
     with open(filename, 'r+') as file:
         file_data = json.load(file)
-        if new_data not in file_data['phones']:
-            file_data['phones'].append(new_data)
-            file.seek(0)
-            json.dump(file_data, file, indent = 4)
-        else:
-            return "Nothing changed"
+        file_data['phones'].append(new_data)
+        file.seek(0)
+        json.dump(file_data, file, indent = 4)
+
 
 
 URL = "https://mobile4ugsm.pl/pl/new/"
