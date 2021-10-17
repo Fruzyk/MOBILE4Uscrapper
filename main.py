@@ -1,15 +1,6 @@
 import requests
-import json
+import re
 from bs4 import BeautifulSoup
-
-
-def write_json(new_data, filename='db.json'):
-    with open(filename, 'r+') as file:
-        file_data = json.load(file)
-        file_data['phones'].append(new_data)
-        file.seek(0)
-        json.dump(file_data, file, indent = 4)
-
 
 
 URL = "https://mobile4ugsm.pl/pl/new/"
@@ -24,15 +15,16 @@ for index, job_element in enumerate(job_elements):
     price_element = job_element.find("div", class_="price")
     link_element = job_element.find("a", class_= "prodname")
     name = name_element.text.strip()
-    price = price_element.text
+    price = price_element.text.strip()
+    p = "".join([s for s in re.findall('[0-9,]', price)])
+    print(p)
     link = url_4links + link_element.get('href')
-    json_object = {
-        "id": index+1,
-        "url": link,
-        "name": name,
-        "price": price
+    fin_object = {
+        'url': link,
+        'name': name,
+        'price': p + "zł"
         }
-    write_json(json_object)
+    print(fin_object)
 
 
 
