@@ -1,11 +1,16 @@
 import requests
 import re
 from bs4 import BeautifulSoup
+import pymongo
+from pymongo import MongoClient
 
+
+cluster = MongoClient("mongodb+srv://fruzyk:Stefan306@cluster0.o651q.mongodb.net/Mobile4UScrapperDB?retryWrites=true&w=majority")
+db = cluster["Mobile4UScrapperDB"]
+collections = db["PhonesDB"]
 
 URL = "https://mobile4ugsm.pl/pl/new/"
 page = requests.get(URL)
-
 soup = BeautifulSoup(page.content, "html.parser")
 job_elements = soup.find_all("div", class_="product s-grid-3 product-main-wrap")
 numberpgesprep = soup.find("ul", class_="paginator")
@@ -27,7 +32,7 @@ for i in range(int(z)):
         price = price_element.text.strip()
         p = "".join([s for s in re.findall('[0-9,]', price)])
         link = url_4links + link_element.get('href')
-        if link not in fin_object:
-            fin_object[link] = [name, p + "zł"]
-    print(fin_object)
+        fin_object = {"URL": link, "name": name, "price": p + "zł"}
+        collections.insert_one(fin_object)
+
 
