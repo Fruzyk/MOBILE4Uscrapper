@@ -1,8 +1,4 @@
-gunicorn
 requests
-bs4
 twilio
-lxml
 pymongo
-re
 time
