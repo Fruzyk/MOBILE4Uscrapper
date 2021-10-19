@@ -16,7 +16,12 @@ page = requests.get(URL)
 soup = BeautifulSoup(page.content, "html.parser")
 job_elements = soup.find_all("div", class_="product s-grid-3 product-main-wrap")
 numberpgesprep = soup.find("ul", class_="paginator")
-z = max([s for s in re.findall('[0-9,]', numberpgesprep.text.strip())])
+if numberpgesprep == None:
+    z = 1
+else:
+    z = max([s for s in re.findall('[0-9]', numberpgesprep.text.strip())])
+saved_list = []
+
 
 for i in range(int(z)):
     URL = "https://mobile4ugsm.pl/pl/new/" + str(i+1)
@@ -35,15 +40,15 @@ for i in range(int(z)):
         p = "".join([s for s in re.findall('[0-9,]', price)])
         link = url_4links + link_element.get('href')
         fin_object = {"URL": link, "name": name, "price": p + "zł", "flag": 0}
+        saved_list.append(link)
         col = collections.find({"URL": ""})
         for i in col:
             if link not in i["URL"]:
-                collections_new.drop()
                 collections_new.insert_one(fin_object)
                 collections.insert_one(fin_object)
-            else:
-                collections.update_one({"URL": link}, {"$set": {"flag": 1}})
-            if 0 in i["flag"]:
-                collections.delete_one({"URL": link})
 
+
+for i in collections.find():
+    if i["URL"] not in saved_list:
+        collections.delete_one(i)
 
